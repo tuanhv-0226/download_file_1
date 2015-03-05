@@ -3,6 +3,7 @@ package com.framgia.downloadfileapp.controllers;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.PowerManager;
+import android.widget.Toast;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -14,7 +15,19 @@ import java.net.URL;
 /**
  * Created by framgiavn on 03/03/2015.
  */
-public class DownloadCtr {
+public class DownloadController {
+
+    private Context ctrContext;
+
+    public DownloadController(Context context) {
+        this.ctrContext = context;
+    }
+
+    public void downloadFile(String sUrl, String saveTo) {
+        DownloadTask downTask = new DownloadTask(ctrContext, saveTo);
+        downTask.execute(sUrl);
+    }
+
     private class DownloadTask extends AsyncTask<String, Integer, String> {
         private Context mContext;
         private PowerManager.WakeLock mWakeLock;
@@ -101,6 +114,7 @@ public class DownloadCtr {
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
             mWakeLock.release();
+            Toast.makeText(mContext, "Download done!", Toast.LENGTH_LONG).show();
         }
 
         @Override

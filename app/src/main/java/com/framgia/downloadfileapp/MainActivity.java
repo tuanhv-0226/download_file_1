@@ -4,6 +4,10 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+
+import com.framgia.downloadfileapp.adapters.DialogMessage;
+import com.framgia.downloadfileapp.controllers.DownloadController;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -12,6 +16,11 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        String sUrl = "http://mp3.zing.vn/bai-hat/Chac-Ai-Do-Se-Ve-Son-Tung-M-TP/ZW6EO0Z8.html";
+        String saveTo = "/storage/emulated/0";
+        DownloadController ctr = new DownloadController(getBaseContext());
+        ctr.downloadFile(sUrl, saveTo);
     }
 
 
@@ -29,11 +38,42 @@ public class MainActivity extends ActionBarActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch (id) {
+            case R.id.actDownload:
+                clickLinkDownload();
+                break;
+            case R.id.actMultiChoice:
+                break;
+            case R.id.actSettings:
+                clickSettingDownload();
+                break;
+            default:
+                break;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void clickLinkDownload() {
+        DialogMessage dialogLink = new DialogMessage(this,
+                "LinkDownload",
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                    }
+                });
+        dialogLink.show();
+    }
+
+    public void clickSettingDownload() {
+        DialogMessage dialogSetting = new DialogMessage(this,
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                    }
+                });
+        dialogSetting.show();
     }
 }
