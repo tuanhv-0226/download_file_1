@@ -3,7 +3,12 @@ package com.framgia.downloadfileapp.controllers;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.PowerManager;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import com.framgia.downloadfileapp.adapters.DatabaseAdapter;
+import com.framgia.downloadfileapp.models.FileModel;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -18,13 +23,21 @@ import java.net.URL;
 public class DownloadController {
 
     private Context ctrContext;
+    protected boolean mPauseWork = false;
+    private final Object mPauseWorkLock = new Object();
+    private FileModel mFileDownload;
+    private DatabaseAdapter mDBAdapter;
 
-    public DownloadController(Context context) {
+    public DownloadController(Context context, FileModel fileDownload, DatabaseAdapter dbAdapter) {
         this.ctrContext = context;
+        this.mFileDownload = fileDownload;
+        this.mDBAdapter = dbAdapter;
     }
 
-    public void downloadFile(String sUrl, String saveTo) {
-        DownloadTask downTask = new DownloadTask(ctrContext, saveTo);
+    public void downloadFile() {
+        String sUrl = mFileDownload.getLinkDownload();
+        String fullSaveTo = mFileDownload.getSaveTo() + mFileDownload.getFileName();
+        DownloadTask downTask = new DownloadTask(ctrContext, fullSaveTo);
         downTask.execute(sUrl);
     }
 
@@ -32,12 +45,20 @@ public class DownloadController {
         private Context mContext;
         private PowerManager.WakeLock mWakeLock;
         private String mLocationSave;
+        private ProgressBar mProgress;
+        private TextView mTextView;
 
         public DownloadTask(Context context, String locationSave) {
             mContext = context;
             mLocationSave = locationSave;
         }
 
+        public DownloadTask(Context context, String locationSave, ProgressBar progress, TextView textView) {
+            mContext = context;
+            mLocationSave = locationSave;
+            mProgress = progress;
+            mTextView = textView;
+        }
 
         @Override
         protected String doInBackground(String... sUrl) {
@@ -73,6 +94,15 @@ public class DownloadController {
                         input.close();
                         return null;
                     }
+                    //wait here if work is paused
+                    synchronized (mPauseWorkLock) {
+                        while (mPauseWork) {
+                            try {
+                                mPauseWorkLock.wait();
+                            } catch (InterruptedException ex) {}
+                        }
+                    }
+
                     total += count;
                     //percentage
                     if (fileLength > 0) {
@@ -114,12 +144,24 @@ public class DownloadController {
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
             mWakeLock.release();
+            mFileDownload.setFileStatus(1);
+            mDBAdapter.updateLinkDownload(mFileDownload.getRowId(), 1);
             Toast.makeText(mContext, "Download done!", Toast.LENGTH_LONG).show();
         }
 
         @Override
         protected void onProgressUpdate(Integer... values) {
             super.onProgressUpdate(values);
+            mProgress.setIndeterminate(false);
+            mProgress.setMax(100);
+            mProgress.setProgress(values[0]);
+        }
+    }
+
+    public void setPauseWork(boolean pauseWork) {
+        mPauseWork = pauseWork;
+        if (!mPauseWork) {
+            mPauseWorkLock.notifyAll();
         }
     }
 }

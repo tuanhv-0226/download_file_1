@@ -4,12 +4,52 @@ package com.framgia.downloadfileapp.models;
  * Created by framgiavn on 03/03/2015.
  */
 public class FileModel {
-    String linkDownload;
-    String fileName;
-    long fileSize;
-    int fileStatus;
-    String locationSave;
-    String fileDate;
+    private int rowId;
+    private String linkDownload;
+    private String fileName;
+    private long fileSize;
+    private int fileStatus;
+    private String saveTo;
+    private String fileDate;
+
+    public FileModel(String sLink) {
+        this.linkDownload = sLink;
+    }
+
+    public FileModel(String sLink, String sSaveTo) {
+        this.linkDownload = sLink;
+        this.saveTo = sSaveTo;
+    }
+
+    public FileModel(String sLink, String sSaveTo, String fileName) {
+        this.linkDownload = sLink;
+        this.saveTo = sSaveTo;
+        this.fileName = fileName;
+        this.fileStatus = 0;
+    }
+
+    public FileModel(String sLink, String sSaveTo, String fileName, int fileStatus) {
+        this.linkDownload = sLink;
+        this.saveTo = sSaveTo;
+        this.fileName = fileName;
+        this.fileStatus = fileStatus;
+    }
+
+    public FileModel(int rowId, String sLink, String sSaveTo, String fileName, int fileStatus) {
+        this.rowId = rowId;
+        this.linkDownload = sLink;
+        this.saveTo = sSaveTo;
+        this.fileName = fileName;
+        this.fileStatus = fileStatus;
+    }
+
+    public int getRowId() {
+        return rowId;
+    }
+
+    public void setRowId(int rowId) {
+        this.rowId = rowId;
+    }
 
     public String getLinkDownload() {
         return linkDownload;
@@ -43,12 +83,12 @@ public class FileModel {
         this.fileStatus = fileStatus;
     }
 
-    public String getLocationSave() {
-        return locationSave;
+    public String getSaveTo() {
+        return saveTo;
     }
 
-    public void setLocationSave(String locationSave) {
-        this.locationSave = locationSave;
+    public void setSaveTo(String saveTo) {
+        this.saveTo = saveTo;
     }
 
     public String getFileDate() {

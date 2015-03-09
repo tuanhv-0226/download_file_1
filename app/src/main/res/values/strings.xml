@@ -6,6 +6,12 @@
     <string name="action_download">Download File</string>
     <string name="action_multichoice">Multi Choice</string>
 
+    <string name="menu_pause">Pause</string>
+    <string name="menu_resume">Resume</string>
+    <string name="menu_stop">Stop</string>
+    <string name="menu_redownload">Redownload</string>
+    <string name="menu_delete">Delete</string>
+
     <string name="close">Close</string>
     <string name="start_download">Start Download</string>
     <string name="apply">Apply</string>
